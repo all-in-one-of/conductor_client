@@ -1,5 +1,5 @@
 - type: parallel
-  tag: ^v?(?:(?:(?P<epoch>[0-9]+)!)?epoch(?P<release>[0-9]+(?:\.[0-9]+)*)(?P<pre>[-_\.]?(?P<pre_l>(a|b|c|rc|alpha|beta|pre|preview))[-_\.]?(?P<pre_n>[0-9]+)?)?(?P<post>(?:-(?P<post_n1>[0-9]+))|(?:[-_\.]?(?P<post_l>post|rev|r)[-_\.]?(?P<post_n2>[0-9]+)?))?(?P<dev>[-_\.]?(?P<dev_l>dev)[-_\.]?(?P<dev_n>[0-9]+)?)?)(?:\+(?P<local>[a-z0-9]+(?:[-_\.][a-z0-9]+)*))?$
+  tag: '^([1-9]\d*!)?{(0|[1-9]\d*)}(\.{(0|[1-9]\d*)})*((a|b|rc){(0|[1-9]\d*)})?(\.post{(0|[1-9]\d*)})?(\.dev{(0|[1-9]\d*)})?$'
   steps:
   - service: deb
     name: Build Windows installer
@@ -14,12 +14,13 @@
     name: Build EL-7
     command: /src/installers/rpm/build.sh 7
 - name: Publish
-  tag: ^v?(?:(?:(?P<epoch>[0-9]+)!)?epoch(?P<release>[0-9]+(?:\.[0-9]+)*)(?P<pre>[-_\.]?(?P<pre_l>(a|b|c|rc|alpha|beta|pre|preview))[-_\.]?(?P<pre_n>[0-9]+)?)?(?P<post>(?:-(?P<post_n1>[0-9]+))|(?:[-_\.]?(?P<post_l>post|rev|r)[-_\.]?(?P<post_n2>[0-9]+)?))?(?P<dev>[-_\.]?(?P<dev_l>dev)[-_\.]?(?P<dev_n>[0-9]+)?)?)(?:\+(?P<local>[a-z0-9]+(?:[-_\.][a-z0-9]+)*))?$
+  tag: '^([1-9]\d*!)?{(0|[1-9]\d*)}(\.{(0|[1-9]\d*)})*((a|b|rc){(0|[1-9]\d*)})?(\.post{(0|[1-9]\d*)})?(\.dev{(0|[1-9]\d*)})?$'
   service: python
   command: python /src/installers/build/publish.py
 
 - name: No Tag
   service: deb
-  tag: ^((!^v?(?:(?:(?P<epoch>[0-9]+)!)?epoch(?P<release>[0-9]+(?:\.[0-9]+)*)(?P<pre>[-_\.]?(?P<pre_l>(a|b|c|rc|alpha|beta|pre|preview))[-_\.]?(?P<pre_n>[0-9]+)?)?(?P<post>(?:-(?P<post_n1>[0-9]+))|(?:[-_\.]?(?P<post_l>post|rev|r)[-_\.]?(?P<post_n2>[0-9]+)?))?(?P<dev>[-_\.]?(?P<dev_l>dev)[-_\.]?(?P<dev_n>[0-9]+)?)?)(?:\+(?P<local>[a-z0-9]+(?:[-_\.][a-z0-9]+)*))?$).)*$
+  tag: '^((!^([1-9]\d*!)?{(0|[1-9]\d*)}(\.{(0|[1-9]\d*)})*((a|b|rc){(0|[1-9]\d*)})?(\.post{(0|[1-9]\d*)})?(\.dev{(0|[1-9]\d*)})?$).)*$'
   command: echo "No matching tag.  Not building"
+
  
