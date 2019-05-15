@@ -1,5 +1,5 @@
 - type: parallel
-  tag: '^([1-9]\d*!)?{(0|[1-9]\d*)}(\.{(0|[1-9]\d*)})*((a|b|rc){(0|[1-9]\d*)})?(\.post{(0|[1-9]\d*)})?(\.dev{(0|[1-9]\d*)})?$'
+  tag: '^([1-9]\d*!)?(0|[1-9]\d*)(\.(0|[1-9]\d*))*((a|b|rc)(0|[1-9]\d*))?(\.post(0|[1-9]\d*))?(\.dev(0|[1-9]\d*))?$'
   steps:
   - service: deb
     name: Build Windows installer
@@ -14,13 +14,11 @@
     name: Build EL-7
     command: /src/installers/rpm/build.sh 7
 - name: Publish
-  tag: '^([1-9]\d*!)?{(0|[1-9]\d*)}(\.{(0|[1-9]\d*)})*((a|b|rc){(0|[1-9]\d*)})?(\.post{(0|[1-9]\d*)})?(\.dev{(0|[1-9]\d*)})?$'
+  tag: '^([1-9]\d*!)?(0|[1-9]\d*)(\.(0|[1-9]\d*))*((a|b|rc)(0|[1-9]\d*))?(\.post(0|[1-9]\d*))?(\.dev(0|[1-9]\d*))?$'
   service: python
   command: python /src/installers/build/publish.py
 
 - name: No Tag
   service: deb
-  tag: '^((!^([1-9]\d*!)?{(0|[1-9]\d*)}(\.{(0|[1-9]\d*)})*((a|b|rc){(0|[1-9]\d*)})?(\.post{(0|[1-9]\d*)})?(\.dev{(0|[1-9]\d*)})?$).)*$'
+  tag: '^((!^([1-9]\d*!)?(0|[1-9]\d*)(\.(0|[1-9]\d*))*((a|b|rc)(0|[1-9]\d*))?(\.post(0|[1-9]\d*))?(\.dev(0|[1-9]\d*))?$).)*$'
   command: echo "No matching tag.  Not building"
-
- 
