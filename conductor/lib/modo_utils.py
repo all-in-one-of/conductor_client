@@ -79,8 +79,11 @@ class ModoSubmit(conductor_submit.Submit):
     def __init__(self, job_args, **task_args):
         self._scene = modo.Scene()
 
+        assert "output_path" in job_args, 'Missing "output_path" arg'
+        job_args["output_path"] = massage_path(job_args["output_path"], nodrive=False, quote=False)
+
         if 'tasks_data' not in job_args:
-            task_args['output_path'] = job_args["output_path"]
+            task_args['output_path'] = massage_path(job_args["output_path"], nodrive=True, quote=True)
 
             if 'frames' not in task_args:
                 task_args['frames'] = self.get_frames_str()
@@ -169,17 +172,17 @@ class ModoSubmit(conductor_submit.Submit):
         frames_generator = submitter.TaskFramesGenerator(frames_list, chunk_size=chunk_size, uniform_chunk_step=True)
         for start_frame, end_frame, step, task_frames in frames_generator:
             task_cmd = cmd_template.format(
-                render_script_filepath=render_script_filepath,
-                modo_filepath=file_utils.conform_platform_filepath(file_utils.strip_drive_letter(modo_filepath)),  # windows pathing hack
-                output_path=output_path,
+                render_script_filepath=massage_path(render_script_filepath),
+                modo_filepath=massage_path(modo_filepath),
+                output_path=massage_path(output_path),  # windows pathing hack
                 frame_start=start_frame,
                 frame_end=end_frame,
                 frame_step=step,
-                project_dir=(' --project-dir %s' % pipes.quote(project_dir)) if project_dir is not None else "",
+                project_dir=(' --project-dir %s' % massage_path(project_dir)) if project_dir is not None else "",
                 res_x=(' --res-x %s' % res_x) if res_x is not None else "",
                 res_y=(' --res-y %s' % res_y) if res_y is not None else "",
                 file_format=(' --file-format %s' % file_format) if file_format is not None else "",
-                output_pattern=(' --output-pattern %s' % pipes.quote(output_pattern)) if output_pattern is not None else "",
+                output_pattern=(' --output-pattern %s' % massage_path(output_pattern)) if output_pattern is not None else "",
                 render_pass_group=(' --render-pass-group %s' % render_pass_group) if render_pass_group is not None else "",
             )
 
@@ -190,3 +193,13 @@ class ModoSubmit(conductor_submit.Submit):
             tasks_data.append({"command": task_cmd,
                                "frames": task_frames_str})
         return tasks_data
+
+
+def massage_path(path, quote=True, nodrive=True):
+    if nodrive:
+        path = file_utils.strip_drive_letter(path)
+    path = os.path.expandvars(path)
+    path = os.path.normpath(path).replace('\\', "/")
+    if quote:
+        path = pipes.quote(path)
+    return path
