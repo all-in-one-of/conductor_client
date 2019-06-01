@@ -6,6 +6,7 @@ import logging
 import os
 import shlex
 import sys
+import time
 
 
 import lx
@@ -295,8 +296,20 @@ def main():
     run_modo_render(**args)
 
 
+def wait(seconds):
+    logger.info("waiting for %s seconds", seconds)
+    for _ in range(int(seconds)):
+        sys.stdout.write(" .")
+        time.sleep(1)
+
+
 if __name__ == "__main__":
     lx.eval("log.toConsole true")
     lx.eval("log.toConsoleRolling true")
     logging.basicConfig(level=logging.DEBUG)
+    # Wait for a few seconds before executing any modo commands.
+    # This is a hack/work-around for a bug where modo will oftentimes (~30% of the time) hang
+    # when starting. The theory is that there is a window of time where modo hasn't fully initialized yet,
+    # and if you issue commands to it before it's ready, it will cause modo to hang.
+    wait(5)
     main()
