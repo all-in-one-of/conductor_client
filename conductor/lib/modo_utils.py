@@ -9,21 +9,25 @@ from conductor import submitter
 packages = api_client.request_software_packages()
 modo_package = [package for package in packages if package["product"] == "modo"][0]
 
+PROJECT_DIR="/home/lschlosser/modo/checkpointvfx"
+RENDER_SCRIPT_FILEPATH="/home/lschlosser/git/conductor_client/samples/resources/modo/render.py"
+OUTPUT_PATH="/tmp/render"
 
 job_args = {
+    "autoretry_policy": { "preempted": { "max_retries": 5}},
     "cores": 2,
+#    "job_title": "whatever you want your job title to be",
     "local_upload": False,
     "machine_type": "standard",
-    "output_path": "/tmp/render",
+    "output_path": OUTPUT_PATH,
     "project": "default",
     "preemptible": True,
     "scout_frames": "1,12,24",
     "software_package_ids": [modo_package["package_id"]],
-#    "job_title": "whatever you want your job title to be",
-#    "upload_paths": [
-#        r"Z:\scripts\conductor_render.py",
-#        r"S":\Conductor",
-#    ]
+    "upload_paths": [
+        PROJECT_DIR,
+        RENDER_SCRIPT_FILEPATH,
+    ]
 }
 
 task_args = {
@@ -31,7 +35,7 @@ task_args = {
     # ----- Required ------
 
     # The path to the render.py file. This gets executed on conductor.
-    render_script_filepath": r"Z:\scripts\render.py",
+    render_script_filepath": RENDER_SCRIPT_FILEPATH,
 
     # ---- optional -------
     # "chunk_size": 1,
@@ -40,8 +44,8 @@ task_args = {
     # "res_x": 1920,
     # "res_y": 1080,
     "file_format": "openexr_32",
-    # "project_dir": r"S:\conductor",
-     "output_pattern": ".[<pass>.][<output>.][<LR>.]<FFFF>",
+    "project_dir": PROJECT_DIR,
+    "output_pattern": "[_<pass>.][<output>.][<LR>.]<FFFF>",
     # "render_pass_group": "render pass group name",
 }
 
